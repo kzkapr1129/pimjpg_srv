@@ -1,0 +1,13 @@
+mjpg_srv
+=============
+
+Building & Run
+=======================
+
+Please type the following command:
+
+ $ ./configure CPPFLAGS="-g -O0" CXXFLAGS="-g -O0 -I /opt/vc/include/interface -I /opt/vc/include -L /opt/vc/lib" CFLAGS="-g -O0 -I /opt/vc/include/interface -I /opt/vc/include -L /opt/vc/lib"
+ $ make
+ $ src/pimjpg_srv
+
+
