@@ -205,11 +205,21 @@ struct ClientSockInfo {
 
         timeval t(settings.timeout_recving);
         int status;
-        if ((status = select(socket+1, &readfds, NULL, NULL, &t)) <= 0) {
+        int retry = 3;
+        while ((status = select(socket+1, &readfds, NULL, NULL, &t)) <= 0) {
             if (errno == ETIMEDOUT) {
                 // timeout
-                fprintf(stderr, "recvRequest() was timeout\n");
+                fprintf(stderr, "recvRequest() was timeout: err=%d\n", errno);
                 return ETIMEDOUT;
+            } else if (status == 0 && errno == 0) {
+                if (retry > 0) {
+                    fprintf(stderr, "Couldn't read values to socket, so retry select()... retry=%d\n", retry);
+                    usleep(1000000); // 100ms
+                    retry--;
+                } else {
+                    fprintf(stderr, "Although retried select(), socket couldn't enable ....\n ");
+                    return ETIMEDOUT;
+                }
             } else {
                 fprintf(stderr, "recvRequest() was failed: err=%d\n", errno);
                 return errno;
@@ -233,11 +243,21 @@ struct ClientSockInfo {
 
         timeval t(settings.timeout_sending);
         int status;
-        if ((status = select(socket+1, NULL, &writefds, NULL, &t)) <= 0) {
+        int retry = 3;
+        while ((status = select(socket+1, NULL, &writefds, NULL, &t)) <= 0) {
             if (errno == ETIMEDOUT) {
                 // timeout
                 fprintf(stderr, "sendString() was timeout: str=%s", string.c_str());
                 return ETIMEDOUT;
+            } else if (status == 0 && errno == 0) {
+                if (retry > 0) {
+                    fprintf(stderr, "Couldn't write values to socket, so retry select()... retry=%d\n", retry);
+                    usleep(1000000); // 100ms
+                    retry--;
+                } else {
+                    fprintf(stderr, "Although retried select(), socket couldn't enable ....\n ");
+                    return ETIMEDOUT;
+                }
             } else {
                 fprintf(stderr, "sendString() was failed: err=%d\n", errno);
                 return errno;
