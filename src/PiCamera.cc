@@ -82,7 +82,11 @@ PiCamera::PiCamera(const PiCamSettings& settings, PiCameraListener* listener, in
     }
 
     RASPICAM_CAMERA_PARAMETERS c_params;
+    // Get default settings
     raspicamcontrol_set_defaults(&c_params);
+    // Set camera parameters
+    c_params.rotation = settings.rotation;
+    // Dump parameters
     raspicamcontrol_dump_parameters(&c_params);
 
     // initialize gpu

@@ -12,9 +12,10 @@ struct PiCamSettings {
     int fps;
     int quality;
     long timeout_writing_frame; // ex) 100000000 = 100ms
+    int rotation;
 
     PiCamSettings() : width(640), height(480), fps(15), quality(85),
-            timeout_writing_frame(100000000) {}
+            timeout_writing_frame(100000000), rotation(180) {}
 };
 
 class PiCameraListener {
